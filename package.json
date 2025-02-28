@@ -1,0 +1,52 @@
+{
+  "name": "words-and-chars-count",
+  "displayName": "Words and Characters Count",
+  "description": "Live word and character count",
+  "version": "0.1.0",
+  "author": "Francisco Freitas",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FranciscoJRFreitas/words-and-chars-count"
+  },
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "word-count.show",
+        "title": "Word Count: Show"
+      },
+      {
+        "command": "word-count.hide",
+        "title": "Word Count: Hide"
+      },
+      {
+        "command": "word-count.details",
+        "title": "Word Count: Details"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.60.0",
+    "glob": "^7.1.7",
+    "typescript": "^4.3.2"
+  },
+  "publisher": "FranciscoJRFreitas"
+}
