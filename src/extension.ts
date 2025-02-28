@@ -1,63 +1,84 @@
 import * as vscode from 'vscode';
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
-  // creates the status bar word counter
+  // Creates the status bar word counter
   const statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
     0
   );
+  
+  let isVisible = true;
 
-  // registers the word-count.show, hide commands which show/hide the status bar
+  // Registers the word-count.show command
   subscriptions.push(
     vscode.commands.registerCommand('word-count.show', () => {
+      isVisible = true;
       statusBarItem.show();
     })
   );
 
+  // Registers the word-count.hide command
   subscriptions.push(
     vscode.commands.registerCommand('word-count.hide', () => {
+      isVisible = false;
       statusBarItem.hide();
     })
   );
 
-  // counts the number of words in a passed in string
-  const count = (text: string): number => {
+  // Toggle visibility when clicking on status bar item
+  statusBarItem.command = 'word-count.toggle';
+
+  subscriptions.push(
+    vscode.commands.registerCommand('word-count.toggle', async () => {
+      if (isVisible) {
+        const confirmation = await vscode.window.showWarningMessage(
+          'Are you sure you want to hide the word and character count?',
+          'Yes',
+          'Cancel'
+        );
+        
+        if (confirmation === 'Yes') {
+          isVisible = false;
+          statusBarItem.hide();
+          
+          await vscode.window.showInformationMessage(
+            'Word and character count is hidden. You can have it displayed back by running "Word Count: Show" in the Command Palette (Ctrl+Shift+P).'
+          );
+        }
+      } else {
+        isVisible = true;
+        statusBarItem.show();
+      }
+    })
+  );
+
+  // Counts the number of words in a passed-in string
+  const countWords = (text: string): number => {
     return text.split(/\s+/g).filter((word) => word).length;
   };
 
-  // gets the document from the active text editor, and then returns the text in the document. If text is selected, return that text instead
+  // Gets the document text (or selection if any)
   const getText = (): string | null => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return null;
     const { document, selection } = editor;
-    const selectionRange =
-      selection && !selection.isEmpty
-        ? new vscode.Range(
-            selection.start.line,
-            selection.start.character,
-            selection.end.line,
-            selection.end.character
-          )
-        : null;
-
-    return selectionRange
-      ? editor.document.getText(selectionRange)
-      : document.getText();
+    
+    return selection.isEmpty ? document.getText() : document.getText(selection);
   };
 
-  // invoking this gets the text from the doc, counts the words, and then updates the status bar text
+  // Updates the status bar text with word and character count
   const setWordCount = (): null | void => {
     const text = getText();
     if (text === null) return null;
-    const words = count(text);
-    statusBarItem.text = `${words} Word${words === 1 ? '' : 's'} | ${text.length} Char${text.length === 1 ? '' : 's'}`;
+    const words = countWords(text);
+    statusBarItem.text = `$(edit) ${words} Word${words === 1 ? '' : 's'} | ${text.length} Char${text.length === 1 ? '' : 's'}`;
   };
 
-  //on start up, set the word count, then show the status bar, and then show the details pane
+  // Initialize word count display
   setWordCount();
   statusBarItem.show();
-  statusBarItem.command = 'word-count.details';
 
+  // Update count on document change or selection change
   vscode.workspace.onDidChangeTextDocument(setWordCount);
   vscode.window.onDidChangeTextEditorSelection(setWordCount);
 }

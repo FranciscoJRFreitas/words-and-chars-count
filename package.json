@@ -2,7 +2,7 @@
   "name": "words-and-chars-count",
   "displayName": "Words and Characters Count",
   "description": "Live word and character count",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "author": "Francisco Freitas",
   "license": "MIT",
   "repository": {
@@ -28,10 +28,6 @@
       {
         "command": "word-count.hide",
         "title": "Word Count: Hide"
-      },
-      {
-        "command": "word-count.details",
-        "title": "Word Count: Details"
       }
     ]
   },
@@ -48,5 +44,5 @@
     "glob": "^7.1.7",
     "typescript": "^4.3.2"
   },
-  "publisher": "FranciscoJRFreitas"
+  "publisher": "FranciscoFreitas"
 }
